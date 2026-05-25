@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        عروض الأسعار
+    </title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <style>
+
+        *{
+            box-sizing:border-box;
+        }
+
+        body{
+
+            margin:0;
+
+            font-family:Tahoma;
+
+            background:#f4f6f9;
+
+            color:#111;
+        }
+
+        .page{
+
+            padding:30px;
+        }
+
+        .topbar{
+
+            display:flex;
+
+            justify-content:space-between;
+
+            align-items:center;
+
+            margin-bottom:25px;
+
+            gap:15px;
+
+            flex-wrap:wrap;
+        }
+
+        .title{
+
+            font-size:28px;
+
+            font-weight:bold;
+        }
+
+        .search-box{
+
+            width:280px;
+        }
+
+        .search-box input{
+
+            width:100%;
+
+            padding:12px;
+
+            border:1px solid #ddd;
+
+            border-radius:10px;
+
+            font-size:15px;
+
+            outline:none;
+
+            transition:.2s;
+        }
+
+        .search-box input:focus{
+
+            border-color:#2563eb;
+
+            box-shadow:
+                0 0 0 3px rgba(37,99,235,.12);
+        }
+
+        .new-btn{
+
+            border:none;
+
+            background:#2563eb;
+
+            color:white;
+
+            padding:12px 18px;
+
+            border-radius:10px;
+
+            cursor:pointer;
+
+            font-weight:bold;
+
+            transition:.2s;
+        }
+
+        .new-btn:hover{
+
+            opacity:.92;
+        }
+
+        .new-btn:disabled{
+
+            opacity:.6;
+
+            cursor:not-allowed;
+        }
+
+        .table-wrap{
+
+            background:white;
+
+            border-radius:16px;
+
+            overflow:hidden;
+
+            box-shadow:
+                0 3px 10px rgba(0,0,0,.06);
+        }
+
+        table{
+
+            width:100%;
+
+            border-collapse:collapse;
+        }
+
+        thead{
+
+            background:#111827;
+
+            color:white;
+        }
+
+        th, td{
+
+            padding:14px;
+
+            text-align:center;
+
+            border-bottom:
+                1px solid #eee;
+        }
+
+        tbody tr{
+
+            transition:.2s;
+
+            cursor:pointer;
+        }
+
+        tbody tr:hover{
+
+            background:#f9fafb;
+
+            transform:scale(1.002);
+        }
+
+        .quote-number{
+
+            font-weight:bold;
+
+            color:#111827;
+        }
+
+        .amount{
+
+            font-weight:bold;
+
+            color:#111827;
+        }
+
+        .status{
+
+            padding:6px 12px;
+
+            border-radius:30px;
+
+            font-size:13px;
+
+            font-weight:bold;
+
+            display:inline-block;
+        }
+
+        .draft{
+
+            background:#e5e7eb;
+
+            color:#374151;
+        }
+
+        .sent{
+
+            background:#dbeafe;
+
+            color:#1d4ed8;
+        }
+
+        .approved{
+
+            background:#dcfce7;
+
+            color:#15803d;
+        }
+
+        .rejected{
+
+            background:#fee2e2;
+
+            color:#dc2626;
+        }
+
+        .actions{
+
+            display:flex;
+
+            justify-content:center;
+
+            gap:8px;
+        }
+
+        .btn{
+
+            border:none;
+
+            padding:8px 12px;
+
+            border-radius:8px;
+
+            cursor:pointer;
+
+            font-size:13px;
+
+            transition:.2s;
+        }
+
+        .btn:hover{
+
+            opacity:.9;
+        }
+
+        .open-btn{
+
+            background:#2563eb;
+
+            color:white;
+        }
+
+        .delete-btn{
+
+            background:#dc2626;
+
+            color:white;
+        }
+
+        .empty{
+
+            padding:50px;
+
+            text-align:center;
+
+            color:#777;
+        }
+
+        .empty-icon{
+
+            font-size:55px;
+
+            margin-bottom:12px;
+        }
+
+        @media(max-width:900px){
+
+            .table-wrap{
+
+                overflow:auto;
+            }
+
+            table{
+
+                min-width:900px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<form style="display:none">
+
+    {% csrf_token %}
+
+</form>
+
+
+
+<div class="page">
+
+    <div class="topbar">
+
+        <div class="title">
+
+            🗂 عروض الأسعار
+
+        </div>
+
+
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="بحث برقم العرض أو العميل..."
+            >
+
+        </div>
+
+
+
+        <button
+            class="new-btn"
+            id="newQuoteBtn"
+        >
+
+            ＋ عرض جديد
+
+        </button>
+
+    </div>
+
+
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        رقم العرض
+                    </th>
+
+                    <th>
+                        العميل
+                    </th>
+
+                    <th>
+                        تاريخ الإنشاء
+                    </th>
+
+                    <th>
+                        الإجمالي
+                    </th>
+
+                    <th>
+                        الحالة
+                    </th>
+
+                    <th>
+                        الإجراءات
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+
+            <tbody id="quotationTable">
+
+                {% for quotation in quotations %}
+
+                <tr
+                    onclick="window.location='/quotation/{{ quotation.id }}/'"
+                >
+
+                    <td class="quote-number">
+
+                        {{ quotation.quote_number }}
+
+                    </td>
+
+
+
+                    <td>
+
+                        {{ quotation.submitted_to_name|default:"-" }}
+
+                    </td>
+
+
+
+                    <td>
+
+                        {{ quotation.created_at|date:"d M Y - h:i A" }}
+
+                    </td>
+
+
+
+                    <td class="amount">
+
+                        {{ quotation.grand_total|floatformat:2 }}
+
+                        EGP
+
+                    </td>
+
+
+
+                    <td>
+
+                        <span
+                            class="status {{ quotation.status }}"
+                        >
+
+                            {% if quotation.status == "draft" %}
+
+                                مسودة
+
+                            {% elif quotation.status == "sent" %}
+
+                                تم الإرسال
+
+                            {% elif quotation.status == "approved" %}
+
+                                مقبول
+
+                            {% elif quotation.status == "rejected" %}
+
+                                مرفوض
+
+                            {% endif %}
+
+                        </span>
+
+                    </td>
+
+
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button
+                                class="btn open-btn"
+                            >
+
+                                فتح
+
+                            </button>
+
+
+
+                            <button
+                                class="btn delete-btn"
+
+                                onclick="event.stopPropagation(); deleteQuotation({{ quotation.id }})"
+                            >
+
+                                حذف
+
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="6">
+
+                        <div class="empty">
+
+                            <div class="empty-icon">
+
+                                📄
+
+                            </div>
+
+                            <div>
+
+                                لا توجد عروض أسعار حالياً
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+const csrftoken =
+
+    document.querySelector(
+        '[name=csrfmiddlewaretoken]'
+    ).value
+
+
+
+document
+.getElementById("newQuoteBtn")
+.addEventListener(
+
+    "click",
+
+    async function(){
+
+        this.innerHTML =
+            "جاري الإنشاء..."
+
+        this.disabled = true
+
+
+        try{
+
+            const response = await fetch(
+
+                "/api/quotation/create/",
+
+                {
+
+                    method:"POST",
+
+                    headers:{
+
+                        "X-CSRFToken":
+                            csrftoken
+
+                    }
+
+                }
+
+            )
+
+
+            const data =
+                await response.json()
+
+
+            if(data.success){
+
+                window.location.href =
+
+                    `/quotation/${data.id}/`
+            }
+
+        }catch(error){
+
+            console.error(error)
+
+            alert("حدث خطأ أثناء إنشاء العرض")
+
+            this.innerHTML =
+                "＋ عرض جديد"
+
+            this.disabled = false
+        }
+
+    }
+
+)
+
+
+
+async function deleteQuotation(id){
+
+    const confirmDelete = confirm(
+        "حذف عرض السعر؟"
+    )
+
+    if(!confirmDelete){
+
+        return
+    }
+
+
+    try{
+
+        await fetch(
+
+            `/api/quotation/${id}/delete/`,
+
+            {
+
+                method:"POST",
+
+                headers:{
+
+                    "X-CSRFToken":
+                        csrftoken
+
+                }
+
+            }
+
+        )
+
+        location.reload()
+
+    }catch(error){
+
+        console.error(error)
+
+        alert("حدث خطأ أثناء الحذف")
+    }
+
+}
+
+
+
+document
+.getElementById("searchInput")
+.addEventListener(
+
+    "input",
+
+    function(){
+
+        const value =
+            this.value.toLowerCase()
+
+        const rows =
+            document.querySelectorAll(
+                "#quotationTable tr"
+            )
+
+
+        rows.forEach(row => {
+
+            row.style.display =
+
+                row.innerText
+                .toLowerCase()
+                .includes(value)
+
+                ?
+
+                ""
+
+                :
+
+                "none"
+
+        })
+
+    }
+
+)
+
+</script>
+
+</body>
+
+</html>
