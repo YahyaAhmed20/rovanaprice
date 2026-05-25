@@ -868,15 +868,19 @@ data-field="unit"
         </div>
 
         <div class="note-body">
-
-            <textarea
-
-                data-field="payment_terms"
-
-                class="quotation-field"
-
-            >{{ quotation.payment_terms }}</textarea>
-
+<textarea
+    data-field="payment_terms"
+    class="quotation-field"
+    style="
+        min-height: 70px;
+        height: auto;
+        line-height: 1.8;
+        white-space: pre-line;
+        overflow: hidden;
+        resize: vertical;
+        padding: 12px;
+    "
+>{{ quotation.payment_terms }}</textarea>
         </div>
 
     </div>
@@ -892,14 +896,19 @@ data-field="unit"
 
         <div class="note-body">
 
-            <textarea
-
-                data-field="delivery_terms"
-
-                class="quotation-field"
-
-            >{{ quotation.delivery_terms }}</textarea>
-
+           <textarea
+    data-field="delivery_terms"
+    class="quotation-field"
+    style="
+        min-height: 70px;
+        height: auto;
+        line-height: 1.8;
+        white-space: pre-line;
+        overflow: hidden;
+        resize: vertical;
+        padding: 12px;
+    "
+>{{ quotation.delivery_terms }}</textarea>
         </div>
 
     </div>
