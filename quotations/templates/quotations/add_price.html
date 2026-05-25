@@ -488,10 +488,15 @@ tr.merged td:nth-child(2) { font-weight: 700; }
                     value="{{ quotation.submitted_by_name }}"
                 >
 
-                <textarea
-                    data-field="submitted_by_details"
-                    placeholder="التخصص والعنوان"
-                >{{ quotation.submitted_by_details|default:'' }}</textarea>
+            <textarea
+    data-field="submitted_by_details"
+    placeholder="التخصص والعنوان"
+    style="min-height:140px; line-height:1.8;"
+>كابل تراي · تصنيع وتجارة المعادن
+العنوان:
+المكتب الرئيسي/ المعتمدية - محافظة الجيزه
+المصنع / المعتمدية - محافظة الجيزه
+المصنع / المنطقه الصناعيه - الطريق البطئ - قليوب</textarea>
 
             </div>
 
@@ -824,20 +829,20 @@ data-field="unit"
 
 
 
-<div class="val-banner">
+{% comment %} <div class="val-banner"> {% endcomment %}
 
-    ⚠
+    {% comment %} ⚠ {% endcomment %}
 
-    <div
+    {% comment %} <div
         id="warningNote"
         contenteditable="true"
     >
 
         {{ quotation.warning_note }}
 
-    </div>
+    </div> {% endcomment %}
 
-</div>
+{% comment %} </div> {% endcomment %}
 <div class="sec-title" style="margin-top:14px">
 
     <hr>
