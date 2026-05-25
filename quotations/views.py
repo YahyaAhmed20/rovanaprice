@@ -14,7 +14,8 @@ require_POST
 from .models import (
 Quotation,
 QuoteSection,
-QuoteItem
+QuoteItem,
+Unit
 )
 
 from .utils import generate_quote_number
@@ -33,12 +34,22 @@ def quotation_editor(request, pk):
     )
 
     return render(
+
         request,
+
         "quotations/add_price.html",
+
         {
-            "quotation": quotation
-        }
-    )
+
+            "quotation": quotation,
+
+            "units": Unit.objects.filter(
+                is_active=True
+            )
+
+    }
+
+)
 
 
     # =========================

@@ -261,6 +261,71 @@ tr.merged td:nth-child(2) { font-weight: 700; }
   textarea { overflow:visible !important; height:auto !important; }
   @page { margin:0; size:A4; }
 }
+
+.qty-input{
+
+
+width:90px !important;
+
+min-width:90px;
+
+text-align:center;
+
+font-size:14px;
+
+padding:7px;
+
+
+}
+
+.unit-input{
+
+
+width:90px !important;
+
+min-width:90px;
+
+text-align:center;
+
+font-size:14px;
+
+padding:7px;
+
+
+}
+
+.price-input{
+
+
+width:130px !important;
+
+min-width:130px;
+
+text-align:center;
+
+font-size:14px;
+
+padding:7px;
+
+
+
+
+.item-input{
+
+
+border:1px solid #ddd;
+
+border-radius:6px;
+
+padding:8px;
+
+width:100%;
+
+
+}
+
+}
+
 </style>
 </head>
 <body>
@@ -305,9 +370,34 @@ tr.merged td:nth-child(2) { font-weight: 700; }
       </div>
     </div>
     <div class="hd-badge">
-      <small>عرض سعر رقم</small>
-      <div class="snum" id="snPage">QT-2026-001</div>
-      <span class="sdate" id="snDate"></span>
+      <div class="hd-badge">
+
+
+<small>
+    عرض سعر رقم
+</small>
+
+<div
+    class="snum"
+    id="snPage"
+>
+
+    {{ quotation.quote_number }}
+
+</div>
+
+<span
+    class="sdate"
+    id="snDate"
+>
+
+    {{ quotation.created_at|date:"Y-m-d h:i A" }}
+
+</span>
+
+
+</div>
+
     </div>
   </div>
 <div class="meta">
@@ -577,7 +667,7 @@ tr.merged td:nth-child(2) { font-weight: 700; }
     data-item-id="{{ item.id }}"
 >
 
-    <td>#</td>
+    <td></td>
 
     <td>
 
@@ -593,7 +683,7 @@ tr.merged td:nth-child(2) { font-weight: 700; }
         <input
             type="number"
 
-            class="item-input"
+            class="item-input qty-input"
 
             data-field="quantity"
 
@@ -604,15 +694,33 @@ tr.merged td:nth-child(2) { font-weight: 700; }
 
     <td>
 
-        <input
-            type="text"
+       <select
+class="item-input unit-input"
+data-field="unit"
 
-            class="item-input"
+>
 
-            data-field="unit"
 
-            value="{{ item.unit }}"
-        >
+{% for unit in units %}
+
+    <option
+
+        value="{{ unit.name }}"
+
+        {% if item.unit == unit.name %}
+            selected
+        {% endif %}
+
+    >
+
+        {{ unit.name }}
+
+    </option>
+
+{% endfor %}
+
+
+</select>
 
     </td>
 
@@ -621,7 +729,7 @@ tr.merged td:nth-child(2) { font-weight: 700; }
         <input
             type="number"
 
-            class="item-input"
+            class="item-input qty-input"
 
             data-field="unit_price"
 

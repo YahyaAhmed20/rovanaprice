@@ -3,6 +3,8 @@ from django.contrib import admin
 # Register your models here.
 from django.contrib import admin
 
+
+
 from .models import (
     Quotation,
     QuoteSection,
@@ -14,6 +16,11 @@ from .models import (
 # QUOTE ITEM INLINE
 # =========================================
 
+
+
+from .models import Unit
+
+admin.site.register(Unit)
 class QuoteItemInline(admin.TabularInline):
 
     model = QuoteItem

@@ -75,6 +75,18 @@
             border-radius:10px;
 
             font-size:15px;
+
+            outline:none;
+
+            transition:.2s;
+        }
+
+        .search-box input:focus{
+
+            border-color:#2563eb;
+
+            box-shadow:
+                0 0 0 3px rgba(37,99,235,.12);
         }
 
         .new-btn{
@@ -92,6 +104,20 @@
             cursor:pointer;
 
             font-weight:bold;
+
+            transition:.2s;
+        }
+
+        .new-btn:hover{
+
+            opacity:.92;
+        }
+
+        .new-btn:disabled{
+
+            opacity:.6;
+
+            cursor:not-allowed;
         }
 
         .table-wrap{
@@ -130,9 +156,32 @@
                 1px solid #eee;
         }
 
-        tr:hover{
+        tbody tr{
+
+            transition:.2s;
+
+            cursor:pointer;
+        }
+
+        tbody tr:hover{
 
             background:#f9fafb;
+
+            transform:scale(1.002);
+        }
+
+        .quote-number{
+
+            font-weight:bold;
+
+            color:#111827;
+        }
+
+        .amount{
+
+            font-weight:bold;
+
+            color:#111827;
         }
 
         .status{
@@ -144,24 +193,35 @@
             font-size:13px;
 
             font-weight:bold;
+
+            display:inline-block;
         }
 
         .draft{
+
             background:#e5e7eb;
+
+            color:#374151;
         }
 
         .sent{
+
             background:#dbeafe;
+
             color:#1d4ed8;
         }
 
         .approved{
+
             background:#dcfce7;
+
             color:#15803d;
         }
 
         .rejected{
+
             background:#fee2e2;
+
             color:#dc2626;
         }
 
@@ -185,6 +245,13 @@
             cursor:pointer;
 
             font-size:13px;
+
+            transition:.2s;
+        }
+
+        .btn:hover{
+
+            opacity:.9;
         }
 
         .open-btn{
@@ -203,11 +270,31 @@
 
         .empty{
 
-            padding:40px;
+            padding:50px;
 
             text-align:center;
 
             color:#777;
+        }
+
+        .empty-icon{
+
+            font-size:55px;
+
+            margin-bottom:12px;
+        }
+
+        @media(max-width:900px){
+
+            .table-wrap{
+
+                overflow:auto;
+            }
+
+            table{
+
+                min-width:900px;
+            }
         }
 
     </style>
@@ -215,16 +302,26 @@
 </head>
 
 <body>
+
 <form style="display:none">
+
     {% csrf_token %}
+
 </form>
+
+
+
 <div class="page">
 
     <div class="topbar">
 
         <div class="title">
+
             🗂 عروض الأسعار
+
         </div>
+
+
 
         <div class="search-box">
 
@@ -235,6 +332,8 @@
             >
 
         </div>
+
+
 
         <button
             class="new-btn"
@@ -266,7 +365,7 @@
                     </th>
 
                     <th>
-                        التاريخ
+                        تاريخ الإنشاء
                     </th>
 
                     <th>
@@ -285,15 +384,23 @@
 
             </thead>
 
+
+
             <tbody id="quotationTable">
 
                 {% for quotation in quotations %}
 
-                <tr>
+                <tr
+                    onclick="window.location='/quotation/{{ quotation.id }}/'"
+                >
 
-                    <td>
+                    <td class="quote-number">
+
                         {{ quotation.quote_number }}
+
                     </td>
+
+
 
                     <td>
 
@@ -301,13 +408,17 @@
 
                     </td>
 
+
+
                     <td>
 
-                        {{ quotation.created_at|date:"Y-m-d H:i" }}
+                        {{ quotation.created_at|date:"d M Y - h:i A" }}
 
                     </td>
 
-                    <td>
+
+
+                    <td class="amount">
 
                         {{ quotation.grand_total|floatformat:2 }}
 
@@ -315,35 +426,56 @@
 
                     </td>
 
+
+
                     <td>
 
-                        <span class="status {{ quotation.status }}">
+                        <span
+                            class="status {{ quotation.status }}"
+                        >
 
-                            {{ quotation.status }}
+                            {% if quotation.status == "draft" %}
+
+                                مسودة
+
+                            {% elif quotation.status == "sent" %}
+
+                                تم الإرسال
+
+                            {% elif quotation.status == "approved" %}
+
+                                مقبول
+
+                            {% elif quotation.status == "rejected" %}
+
+                                مرفوض
+
+                            {% endif %}
 
                         </span>
 
                     </td>
 
+
+
                     <td>
 
                         <div class="actions">
 
-                            <a
-                                href="/quotation/{{ quotation.id }}/"
+                            <button
+                                class="btn open-btn"
                             >
 
-                                <button class="btn open-btn">
+                                فتح
 
-                                    فتح
+                            </button>
 
-                                </button>
 
-                            </a>
 
                             <button
                                 class="btn delete-btn"
-                                onclick="deleteQuotation({{ quotation.id }})"
+
+                                onclick="event.stopPropagation(); deleteQuotation({{ quotation.id }})"
                             >
 
                                 حذف
@@ -364,7 +496,17 @@
 
                         <div class="empty">
 
-                            لا توجد عروض أسعار حالياً
+                            <div class="empty-icon">
+
+                                📄
+
+                            </div>
+
+                            <div>
+
+                                لا توجد عروض أسعار حالياً
+
+                            </div>
 
                         </div>
 
@@ -386,20 +528,31 @@
 
 <script>
 
-
 const csrftoken =
+
     document.querySelector(
         '[name=csrfmiddlewaretoken]'
-    ).value;
+    ).value
+
+
 
 document
 .getElementById("newQuoteBtn")
 .addEventListener(
+
     "click",
+
     async function(){
 
-        const response =
-            await fetch(
+        this.innerHTML =
+            "جاري الإنشاء..."
+
+        this.disabled = true
+
+
+        try{
+
+            const response = await fetch(
 
                 "/api/quotation/create/",
 
@@ -415,53 +568,81 @@ document
                     }
 
                 }
+
             )
 
-        const data =
-            await response.json()
 
-        if(data.success){
+            const data =
+                await response.json()
 
-            window.location.href =
 
-                `/quotation/${data.id}/`
+            if(data.success){
+
+                window.location.href =
+
+                    `/quotation/${data.id}/`
+            }
+
+        }catch(error){
+
+            console.error(error)
+
+            alert("حدث خطأ أثناء إنشاء العرض")
+
+            this.innerHTML =
+                "＋ عرض جديد"
+
+            this.disabled = false
         }
 
     }
+
 )
 
 
 
 async function deleteQuotation(id){
 
-    const confirmDelete =
-        confirm("حذف عرض السعر؟")
+    const confirmDelete = confirm(
+        "حذف عرض السعر؟"
+    )
 
     if(!confirmDelete){
 
         return
     }
 
-    await fetch(
 
-        `/api/quotation/${id}/delete/`,
+    try{
 
-        {
+        await fetch(
 
-            method:"POST",
+            `/api/quotation/${id}/delete/`,
 
-            headers:{
+            {
 
-                "X-CSRFToken":
-                    csrftoken
+                method:"POST",
+
+                headers:{
+
+                    "X-CSRFToken":
+                        csrftoken
+
+                }
 
             }
 
-        }
+        )
 
-    )
+        location.reload()
 
-    location.reload()
+    }catch(error){
+
+        console.error(error)
+
+        alert("حدث خطأ أثناء الحذف")
+    }
+
 }
 
 
@@ -469,7 +650,9 @@ async function deleteQuotation(id){
 document
 .getElementById("searchInput")
 .addEventListener(
+
     "input",
+
     function(){
 
         const value =
@@ -479,6 +662,7 @@ document
             document.querySelectorAll(
                 "#quotationTable tr"
             )
+
 
         rows.forEach(row => {
 
@@ -495,9 +679,11 @@ document
                 :
 
                 "none"
+
         })
 
     }
+
 )
 
 </script>
